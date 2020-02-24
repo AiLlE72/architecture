@@ -1,23 +1,10 @@
 <section class="section">
     <div class="container">
         <div class="columns">
-            <div class="column ">
-                <h1 class=" panel">Liste des utilisateurs</h1>
-                {{#each dbuser}}
-                <div class="columns">
-                    <div class=" column is-one-quarter">
-                        <p>picture</p>
-                    </div>
-                    <div class="column is-three-quarters">
-                        <p>nom : {{this.name}}</p>
-                        <p>mail : {{this.email}}</p>
-                    </div>
-                </div>
-                {{/each}}
-            </div>
             <div class="column">
-                <h1 class=" panel">Créer un utilisateur</h1>
-                <form action="/inside" method="POST">
+                <h1 class=" panel has-text-centered">Create</h1>
+                <h1 class=" panel has-text-centered">Créer un utilisateur</h1>
+                <form class="panel" action="/inside" method="POST">
                     <div class="field">
                         <label class="label">Username</label>
                         <div class="control has-icons-left has-icons-right">
@@ -43,24 +30,46 @@
                         </div>
                     </div>
                     <div class="field">
+                        <label class="label">confirmer le password</label>
+                        <div class="control">
+                            <input class="input" type="Password" placeholder="Password" name="confpassword">
+                        </div>
+                    </div>
+                    <div class="field">
                         <div class="control">
                             <label class="checkbox">
-                                <input type="checkbox">
+                                <input type="checkbox" name="checkbox">
                                 I agree to the terms and conditions
                             </label>
                         </div>
                     </div>
                     <div class="field is-grouped">
                         <div class="control">
-                            <button class="button is-link">Enregistrer</button>
+                            <button type="submit" class="button is-link">Enregistrer</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="column">
-                <h1 class=" panel">Modifier un utilisateur</h1>
+            <div class="column ">
+                <h1 class=" panel has-text-centered">Read</h1>
+                <h1 class=" panel has-text-centered">Liste des utilisateurs</h1>
                 {{#each dbuser}}
-                <form class ="panel" action="/inside/{{ _id }}/?_method=PUT" method="POST">
+                <div class="column panel">
+                    <div class=" column is-one-quarter">
+                        <p>picture</p>
+                    </div>
+                    <div class="column is-three-quarters">
+                        <p>nom : {{this.name}}</p>
+                        <p>mail : {{this.email}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            <div class="column">
+                <h1 class=" panel has-text-centered">Update</h1>
+                <h1 class=" panel has-text-centered">Modifier un utilisateur</h1>
+                {{#each dbuser}}
+                <form class="panel" action="/inside/{{ _id }}/?_method=PUT" method="POST">
                     <div class="columns ">
                         <div class=" column is-one-quarter">
                             <p>picture</p>
@@ -77,9 +86,10 @@
                 {{/each}}
             </div>
             <div class="column">
-                <h1 class=" panel">Effacer un utilisateur</h1>
+                <h1 class=" panel has-text-centered">Delete</h1>
+                <h1 class=" panel has-text-centered">Effacer un utilisateur</h1>
                 {{#each dbuser}}
-                <form class ="panel" action="/inside/{{ _id }}/?_method=DELETE" method="POST">
+                <form class="panel" action="/inside/{{ _id }}/?_method=DELETE" method="POST">
                     <div class="columns ">
                         <div class=" column is-one-quarter">
                             <p>picture</p>

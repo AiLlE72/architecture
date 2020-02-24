@@ -14,6 +14,7 @@ const inside = require('./controllers/inside')
 // Home
 router.route('/')
     .get(home.get)
+    .post(home.post)
 
 //Inside
 router.route('/inside')
