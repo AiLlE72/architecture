@@ -11,6 +11,8 @@ module.exports = {
         const Pass = req.body.password
         const confPass = req.body.confpassword
         const checkbox = req.body.checkbox
+        console.log(req.file)
+
 
         if (Pass !== confPass) {
             res.redirect('/inside')
@@ -22,13 +24,12 @@ module.exports = {
                     {
                         name: req.body.username,
                         email: req.body.email,
+                        image: req.file.path,
                         password: req.body.password,
                     },
                     res.redirect('/inside')
                 )
-
             }
-
         }
     },
 
@@ -57,8 +58,6 @@ module.exports = {
             myuser,
             (err) => {
                 if (!err) {
-                    console.log('supp ok');
-
                     res.redirect('/inside')
                 } else {
                     res.send(err)

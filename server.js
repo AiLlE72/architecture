@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 
+
 // Constante
 const app = express()
 const key = require('./api/controllers/config')
@@ -31,7 +32,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 //express-handlebars
-app.use(express.static('public'));
+// app.use(express.static('publics')); //utile si un fichier css est present dans le dossier public
+app.use('/publics', express.static('publics'))
+
 
 // Mongoose
 mongoose.connect(urlDB, {

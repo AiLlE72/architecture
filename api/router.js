@@ -5,6 +5,27 @@
 // Import
 const express = require('express')
 const router = express.Router()
+const multer = require("multer")
+
+//config multer
+const MIME_TYPES = { //type d'image accepté
+    'image/jpg': 'jpg',
+    'image/jpeg': 'jpeg',
+    'image/png': 'png'
+};
+
+const storage = multer.diskStorage({ 
+    destination: (req, file, callback) => { 
+        callback(null, './publics/ressources/images') //lieu de stockage des images
+    },
+    filename: (req, file, callback) => { //nom de stockage de l'image
+        const name = file.originalname.split(' ').join('_'); // remplace les espaces du nom de fichier fournit par un underscore
+        const extension = MIME_TYPES[file.mimetype]; // recupere l' extension du fichier
+        callback(null, name + Date.now() + '.' + extension); // reconstruit le nom du fichier
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // Import de controllers
 const home = require('./controllers/home')
@@ -19,7 +40,7 @@ router.route('/')
 //Inside
 router.route('/inside')
     .get(inside.get)
-    .post(inside.post)
+    .post(upload.single('picture'), inside.post)
 
 
 router.route('/inside/:id')
