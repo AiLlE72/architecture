@@ -14,18 +14,20 @@ module.exports = {
         const confPass = req.body.confpassword
         const checkbox = req.body.checkbox
 
+
         if (Pass !== confPass) {
             res.redirect('/inside')
         } else {
             if (checkbox !== 'on') {
                 res.redirect('/inside')
             } else {
+
                 usermodel.create(
                     {
                         name: req.body.username,
                         email: req.body.email,
-                        image: `/assets/ressources/images/${req.file.originalname}`,
-                        img: req.file.originalname,
+                        image: `/assets/ressources/images/${req.file.filename}`,
+                        img: req.file.path,
                         password: req.body.password,
                     },
                     (error, post) => {
@@ -35,13 +37,16 @@ module.exports = {
         }
     },
 
-    put: (req, res) => {
+    put: async (req, res) => {
         const myuser =  usermodel.findById({ _id: req.params.id })
-        console.log(myuser)
-        console.log(req.file)
-        console.log(req.body)
+        const pathImg = await myuser.img
+        // console.log(myuser);
+        
 
-        if (!req.file){
+
+        if (!req.file) {
+            console.log(myuser);
+            
             usermodel.findOneAndUpdate(
                 myuser,
                 {
@@ -58,28 +63,40 @@ module.exports = {
                 }
             )
         } else {
-            usermodel.findOneAndUpdate(
-                myuser,
-                {
-                    name: req.body.username,
-                    email: req.body.email,
-                    image: req.file.path,
-                },
-                { multi: true },
+            fs.unlink(pathImg,
                 (err) => {
-                    if (!err) {
-                        res.redirect('/inside')
+                    if (err) {
+                        console.log(err)
                     } else {
-                        res.send(err)
+                        console.log('photo effacé'),
+                        usermodel.findOneAndUpdate(
+                            myuser,
+                            {
+                                name: req.body.username,
+                                email: req.body.email,
+                                image: `/assets/ressources/images/${req.file.filename}`,
+                                img: req.file.path,
+                            },
+                            { multi: true },
+                            (err) => {
+                                if (!err) {
+                                    res.redirect('/inside')
+                                    console.log(myuser.image);
+
+                                } else {
+                                    res.send(err)
+                                }
+                            }
+                        )
                     }
-                }
-            )  
-        } 
+                })
+
+        }
     },
 
     delete: async (req, res) => {
         const myuser = await usermodel.findById({ _id: req.params.id })
-        const pathImg = myuser.image
+        const pathImg = myuser.img
 
         usermodel.deleteOne(
             myuser,
@@ -92,6 +109,8 @@ module.exports = {
                             if (err) {
                                 console.log(err)
                             } else {
+                                console.log('photo effacé');
+
                                 res.redirect('/inside')
                             }
                         })
