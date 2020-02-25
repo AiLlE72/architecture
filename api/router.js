@@ -41,10 +41,11 @@ router.route('/')
 router.route('/inside')
     .get(inside.get)
     .post(upload.single('picture'), inside.post)
+    .delete(inside.deleteAll)
 
 
 router.route('/inside/:id')
-    .put(inside.put)
+    .put(upload.single('picture'), inside.put)
     .delete(inside.delete)
 
 module.exports = router

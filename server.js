@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 //express-handlebars
 // app.use(express.static('publics')); //utile si un fichier css est present dans le dossier public
-app.use('/publics', express.static('publics'))
+app.use('/assets', express.static('publics'))
 
 
 // Mongoose
