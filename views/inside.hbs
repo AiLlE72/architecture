@@ -59,8 +59,9 @@
                         <p>picture</p>
                     </div>
                     <div class="column is-three-quarters">
-                        <p>nom : {{this.name}}</p>
-                        <p>mail : {{this.email}}</p>
+                        <p>nom : {{ this.name }}</p>
+                        <p>mail : {{ this.email }}</p>
+                        <p>inscription : {{ moment this.createDate format="DD/MM/YY" }}</p>
                     </div>
                 </div>
                 {{/each}}

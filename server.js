@@ -19,6 +19,10 @@ app.engine('hbs', exphbs({
 }));
 app.set('view engine', 'hbs');
 
+//Moment
+var MomentHandler = require("handlebars.moment");
+MomentHandler.registerHelpers(Handlebars);
+
 // Method-Override
 app.use(methodOverride('_method'));
 

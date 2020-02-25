@@ -1,4 +1,5 @@
 const usermodel = require('../database/models/userModel')
+const bcrypt = require('bcrypt')
 
 module.exports = {
     get: (req, res) => {
@@ -7,29 +8,19 @@ module.exports = {
 
     post: async (req, res) => {
         const name = req.body.name
-        const user = await usermodel.findOne({ name })
-        console.log("coucou");
+        const password = req.body.password
+        const User = await usermodel.findOne({ name: name })
 
-        if (!user) {
+        if (!User) {
             res.render('home')
         } else {
-            const password = req.body.password
-            usermodel.findOne({ name }, (err, User) => {
-                req.session.name = User.name
-                req.session.email = User.email
-
-                if (User) {
-                    bcrypt.compare(password, User.password, (err, same) => {
-                        if (same) {
-                            req.session.userId = User._id
-                            res.redirect('/')
-                        } else if (err) {
-                            console.log(err);
-                        }
-                    })
+            bcrypt.compare(password, User.password, (err, same) => {
+                if (!same) {
+                    res.render('home')
+                } else {
+                    res.redirect('/inside')
                 }
             })
-
         }
     }
 }

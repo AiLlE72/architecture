@@ -4,7 +4,7 @@ const usermodel = require('../database/models/userModel')
 module.exports = {
     get: async (req, res) => {
         const dbuser = await usermodel.find(req.params.id)
-        res.redirect('/inside', { dbuser })
+        res.render('inside', { dbuser })
     },
 
     post: (req, res) => {
