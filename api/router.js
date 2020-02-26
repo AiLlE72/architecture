@@ -30,6 +30,7 @@ const upload = multer({ storage: storage });
 const home = require('./controllers/home')
 const inside = require('./controllers/inside')
 const admin = require('./controllers/admin')
+const verifMail = require('./controllers/verifMail')
 
 //import de middleware
 const auth = require('./middleware/auth')
@@ -58,5 +59,15 @@ router.route('/admin')
 router.route('/inside/:id')
     .put(upload.single('picture'), inside.put)
     .delete(inside.delete)
+
+/******** PAGE verifMail **********/ 
+
+// Nodemailer verif 
+router.route('/verify/:id')
+    .get(inside.verifMail)
+// verifMail
+router.route('/verifMail')
+    .get(verifMail.get)
+
 
 module.exports = router

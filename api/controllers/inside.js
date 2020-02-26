@@ -1,6 +1,25 @@
 const usermodel = require('../database/models/userModel')
 const fs = require('fs')
 const path = require('path')
+const nodemailer = require('nodemailer')
+
+// *************parametrage nodemailer***************
+
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    service: 'gmail',
+    port: 587,
+    secure: false,
+    auth: {
+        user: "test.willy72@gmail.com",
+        pass: "totocaca"
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+})
+
+var rand, mailOptions, host, link
 
 
 module.exports = {
@@ -11,6 +30,18 @@ module.exports = {
         const confPass = req.body.confpassword
         const checkbox = req.body.checkbox
 
+        // Nodemailer config  
+        rand = Math.floor((Math.random() * 100) + 54)
+        host = req.get('host')
+        link = "http://" + req.get('host') + "/verify/" + rand
+        mailOptions = {
+            from: 'test.willy72@gmail.com',
+            to: req.body.email,
+            subject: 'Merci de confirmer votre compte email',
+            rand: rand,
+            html: "Bonjour, j'ai voulu faire un truc beau... mais on va faire simple.<br> Merci de cliquer sur ce lien pour verifier votre adresse mail <br><a href=" + link + ">Cliquer ici pour verifier</a>",
+        }
+
 
         if (Pass !== confPass) {
             res.redirect('/inside')
@@ -18,20 +49,66 @@ module.exports = {
             if (checkbox !== 'on') {
                 res.redirect('/inside')
             } else {
+                if (!req.file) {
+                    res.redirect('/inside')
+                } else {
+                    usermodel.create(
+                        {
+                            name: req.body.username,
+                            email: req.body.email,
+                            image: `/assets/ressources/images/${req.file.filename}`,
+                            img: req.file.path,
+                            password: req.body.password,
+                        },
+                        // Nodemailer transport      
+                        transporter.sendMail(mailOptions, (err, res, next) => {
+                            if (err) {
+                                console.log("erreur dans l'envoi du mail");
+                                console.log(err)
+                                res.send(err)
+                            } else {
+                                console.log('Message envoyé');
+                                next()
+                            }
+                        }),
+                        (error, post) => {
+                            res.redirect('/inside')
+                        })
 
-                usermodel.create(
-                    {
-                        name: req.body.username,
-                        email: req.body.email,
-                        image: `/assets/ressources/images/${req.file.filename}`,
-                        img: req.file.path,
-                        password: req.body.password,
-                    },
-                    (error, post) => {
-                        res.redirect('/inside')
-                    })
+                }
             }
         }
+    },
+
+    // *************Page de verification d'email***************
+    verifMail: async (req, res, next) => {
+        const userID = await usermodel.findOne({ email: mailOptions.to })
+        query = { _id: userID._id }
+
+        if ((req.protocol + "://" + req.get('host')) == ("http://" + host)) {
+            console.log("Domain is matched. Information is from Authentic email")
+            if (req.params.id == mailOptions.rand) {
+
+                usermodel.findByIdAndUpdate(
+                    { _id: userID._id },
+                    {
+                        isVerified: true
+                    },
+                    (err) => {
+                        if (!err) {
+                            res.redirect('/verifMail')
+                        } else {
+                            res.rend(err)
+                        }
+                    }
+                )
+            } else {
+                res.send(" Bad Request")
+            }
+        } else {
+            res.send('Request is from unknow source')
+        }
+
     },
 
     // *************fonction GET***************
@@ -43,7 +120,7 @@ module.exports = {
     logout: (req, res, next) => {
         req.session.destroy(() => {
             res.clearCookie,
-            res.redirect('/')
+                res.redirect('/')
         })
     },
 
