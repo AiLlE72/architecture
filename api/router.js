@@ -20,8 +20,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, callback) => { //nom de stockage de l'image
         const name = file.originalname.split(' ').join('_'); // remplace les espaces du nom de fichier fournit par un underscore
-        const extension = MIME_TYPES[file.mimetype]; // recupere l' extension du fichier
-        callback(null, name + Date.now() + '.' + extension); // reconstruit le nom du fichier
+        callback(null, Date.now() + name ); // reconstruit le nom du fichier
     }
 });
 
@@ -30,6 +29,10 @@ const upload = multer({ storage: storage });
 // Import de controllers
 const home = require('./controllers/home')
 const inside = require('./controllers/inside')
+const admin = require('./controllers/admin')
+
+//import de middleware
+const auth = require('./middleware/auth')
 
 /******** PAGE ACCUEIL **********/
 // Home
@@ -37,12 +40,20 @@ router.route('/')
     .get(home.get)
     .post(home.post)
 
+/******** PAGE INSIDE **********/    
 //Inside
 router.route('/inside')
-    .get(inside.get)
-    .post(upload.single('picture'), inside.post)
+    .get(auth, inside.get)
+    .post(upload.single('picture'), inside.post) // upload.single permet de faire le req.file !!!
     .delete(inside.deleteAll)
 
+    //logout
+    router.route('/logout')
+    .get(inside.logout)
+
+/******** PAGE ADMIN **********/   
+router.route('/admin')
+    .get(auth, admin.get)
 
 router.route('/inside/:id')
     .put(upload.single('picture'), inside.put)

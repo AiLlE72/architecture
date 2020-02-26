@@ -4,11 +4,8 @@ const path = require('path')
 
 
 module.exports = {
-    get: async (req, res) => {
-        const dbuser = await usermodel.find(req.params.id)
-        res.render('inside', { dbuser })
-    },
 
+    // *************fonction POST***************
     post: (req, res) => {
         const Pass = req.body.password
         const confPass = req.body.confpassword
@@ -37,21 +34,31 @@ module.exports = {
         }
     },
 
-    put: async (req, res) => {
-        const myuser =  usermodel.findById({ _id: req.params.id })
-        const pathImg = await myuser.img
-        // console.log(myuser);
-        
+    // *************fonction GET***************
+    get: async (req, res) => {
+        const dbuser = await usermodel.find(req.params.id)
+        res.render('inside', { dbuser })
+    },
 
+    logout: (req, res, next) => {
+        req.session.destroy(() => {
+            res.clearCookie,
+            res.redirect('/')
+        })
+    },
+
+    // *************fonction PUT***************
+    put: async (req, res) => {
+        const myuser = await usermodel.findById({ _id: req.params.id })
+        const pathImg = await myuser.img
 
         if (!req.file) {
-            console.log(myuser);
-            
-            usermodel.findOneAndUpdate(
+            usermodel.updateOne(
                 myuser,
                 {
                     name: req.body.username,
                     email: req.body.email,
+                    isAdmin: req.body.select
                 },
                 { multi: true },
                 (err) => {
@@ -63,13 +70,13 @@ module.exports = {
                 }
             )
         } else {
-            fs.unlink(pathImg,
+            fs.unlink(
+                pathImg,
                 (err) => {
                     if (err) {
                         console.log(err)
                     } else {
-                        console.log('photo effacé'),
-                        usermodel.findOneAndUpdate(
+                        usermodel.updateOne(
                             myuser,
                             {
                                 name: req.body.username,
@@ -79,21 +86,20 @@ module.exports = {
                             },
                             { multi: true },
                             (err) => {
-                                if (!err) {
-                                    res.redirect('/inside')
-                                    console.log(myuser.image);
-
-                                } else {
+                                if (err) {
                                     res.send(err)
+                                } else {
+                                    res.redirect('/inside')
+
                                 }
                             }
                         )
                     }
                 })
-
         }
     },
 
+    // *************fonction DELETE***************
     delete: async (req, res) => {
         const myuser = await usermodel.findById({ _id: req.params.id })
         const pathImg = myuser.img
@@ -119,6 +125,7 @@ module.exports = {
         )
     },
 
+    // *************fonction DELETEALL***************
     deleteAll: (req, res) => {
         const directory = path.resolve("publics/ressources/images")
         usermodel.deleteMany((err) => {

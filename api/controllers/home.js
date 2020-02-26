@@ -16,9 +16,19 @@ module.exports = {
         } else {
             bcrypt.compare(password, User.password, (err, same) => {
                 if (!same) {
+
                     res.render('home')
                 } else {
-                    res.redirect('/inside')
+                    if(User.isAdmin == true){
+                        req.session.userId = User._id
+                        req.session.name = User.name
+                        req.session.isAdmin = User.isAdmin   
+                        res.redirect('/inside')
+                    } else {
+                        req.session.userId = User._id
+                        req.session.name = User.name
+                        res.redirect('/inside')
+                    }    
                 }
             })
         }

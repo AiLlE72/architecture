@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
     image : String,
     password: String,
     img: String,
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
     createDate : {
         type: Date,
         default : new Date()
